@@ -64,24 +64,34 @@ Give responses in ${language} only.
 
     const responseData = await response.text();
     console.log('Raw OpenAI Response:', responseData);
+    if (!responseData) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: 'Invalid response from OpenAI',
+          details: responseData
+        })
+      };
+    }
 
     let data2;
     try {
       data2 = JSON.parse(responseData);
     } catch (parseError) {
       console.error('Error parsing OpenAI response:', parseError);
-      return res.status(500).json({ 
-        error: 'Invalid response from OpenAI',
-        details: responseData
-      });
     }
 
     if (!response.ok) {
       console.error('OpenAI API Error:', data2);
-      return res.status(response.status).json({
-        error: data.error?.message || 'OpenAI API error',
-        details: data2
-      });
+      if (data.error) {
+        return {
+          statusCode: response.status,
+          body: JSON.stringify({
+            error: data.error?.message || 'OpenAI API error',
+            details: data2
+          })
+        };
+      }
     }
 
     // The token might be in different locations in the response
@@ -91,31 +101,44 @@ Give responses in ${language} only.
 
     if (!token) {
       console.error('Response structure:', data2);
-      return res.status(500).json({
-        error: 'Token not found in response',
-        details: data2
-      });
+      if (!data2.token) {
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            error: 'Token not found in response',
+            details: data2
+          })
+        };
+      }
     }
 
     console.log('Successfully obtained token');
-    res.json({ 
-      token,
-      // Include additional session data if available
-      session_id: data2.session_id || data2.id,
-      expires_at: data2.expires_at
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        token: 'your_generated_token_here',  // Replace with your actual token
+        session_id: data2.session_id || data2.id,
+        expires_at: data2.expires_at
+      })
+    };
 
   } catch (error) {
     console.error("Error generating session:", error);
-    res.status(500).json({ 
-      error: error.message,
-      details: error.stack
-    });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'An unexpected error occurred',
+        details: error.message
+      })
+    };
   }
 } catch (error) {
   console.error("Error generating session:", error);
-    res.status(500).json({ 
-      error: error.message,
-      details: error.stack
-    });
+  return {
+    statusCode: 500,
+    body: JSON.stringify({
+      error: 'An unexpected error occurred',
+      details: error.message
+    })
+  };
 }}
