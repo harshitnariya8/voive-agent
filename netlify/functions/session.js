@@ -112,5 +112,10 @@ Give responses in ${language} only.
       details: error.stack
     });
   }
-}
-
+} catch (error) {
+  console.error("Error generating session:", error);
+    res.status(500).json({ 
+      error: error.message,
+      details: error.stack
+    });
+}}
