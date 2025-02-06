@@ -1,27 +1,14 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Configure environment variables
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Middleware to parse JSON and serve static files
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Endpoint to generate ephemeral token for WebRTC session
-app.post("/session", async (req, res) => {
+exports.handler = async function(event, context) {
   try {
-    console.log('Requesting session from OpenAI...', req.body);
-    const language = req.body.language || 'english';
+    try {
+      // Parse the incoming request body (assuming it's JSON)
+      const data = JSON.parse(event.body);  // equivalent to req.body in Express
+      console.log('Requesting session from OpenAI...', data);
+
+      const language = data.language || 'english';
     const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
       method: "POST",
       headers: {
@@ -76,9 +63,9 @@ Give responses in ${language} only.
     const responseData = await response.text();
     console.log('Raw OpenAI Response:', responseData);
 
-    let data;
+    let data2;
     try {
-      data = JSON.parse(responseData);
+      data2 = JSON.parse(responseData);
     } catch (parseError) {
       console.error('Error parsing OpenAI response:', parseError);
       return res.status(500).json({ 
@@ -88,23 +75,23 @@ Give responses in ${language} only.
     }
 
     if (!response.ok) {
-      console.error('OpenAI API Error:', data);
+      console.error('OpenAI API Error:', data2);
       return res.status(response.status).json({
         error: data.error?.message || 'OpenAI API error',
-        details: data
+        details: data2
       });
     }
 
     // The token might be in different locations in the response
-    const token = data.token || data.access_token || 
-                 (data.client_secret && data.client_secret.value) ||
-                 (data.session && data.session.token);
+    const token = data2.token || data2.access_token || 
+                 (data2.client_secret && data2.client_secret.value) ||
+                 (data2.session && data2.session.token);
 
     if (!token) {
-      console.error('Response structure:', data);
+      console.error('Response structure:', data2);
       return res.status(500).json({
         error: 'Token not found in response',
-        details: data
+        details: data2
       });
     }
 
@@ -112,8 +99,8 @@ Give responses in ${language} only.
     res.json({ 
       token,
       // Include additional session data if available
-      session_id: data.session_id || data.id,
-      expires_at: data.expires_at
+      session_id: data2.session_id || data2.id,
+      expires_at: data2.expires_at
     });
 
   } catch (error) {
@@ -123,9 +110,5 @@ Give responses in ${language} only.
       details: error.stack
     });
   }
-});
+}
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
