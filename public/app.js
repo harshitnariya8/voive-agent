@@ -33,7 +33,6 @@ class RealtimeVoiceAssistant {
     async initWebRTCSession() {
         try {
             // Fetch ephemeral key with language preference
-            console.log(process.env.NODE_API_KEY_NEW);
             const tokenResponse = await fetch("/.netlify/functions/session", {
                 method: "POST",
                 headers: {

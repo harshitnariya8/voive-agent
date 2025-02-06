@@ -4,6 +4,8 @@
 exports.handler = async function(event, context) {
   try {
     try {
+      console.log(process.env.NODE_API_KEY_NEW);
+
       // Parse the incoming request body (assuming it's JSON)
       const data = JSON.parse(event.body);  // equivalent to req.body in Express
       console.log('Requesting session from OpenAI...', data);
