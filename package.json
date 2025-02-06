@@ -6,10 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "build":"echo 'no build step required'"
+    "build": "netlify deploy --prod"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "netlify-cli": "^17.17.1",
+    "netlify-lambda": "^2.0.16",
+    "serverless-http": "^3.2.0"
   }
 }
