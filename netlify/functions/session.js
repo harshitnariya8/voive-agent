@@ -116,7 +116,7 @@ Give responses in ${language} only.
     return {
       statusCode: 200,
       body: JSON.stringify({
-        token: 'your_generated_token_here',  // Replace with your actual token
+        token: token,  // Replace with your actual token
         session_id: data2.session_id || data2.id,
         expires_at: data2.expires_at
       })
