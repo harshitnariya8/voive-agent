@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenAI Realtime Voice Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
+        <h1 class="text-2xl font-bold mb-4">Voice Assistant</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Left Column: Controls -->
+            <div class="space-y-4">
+                <div id="connection-status" class="mb-4 text-gray-600">
+                    Not Connected
+                </div>
+                
+                <div class="mb-4">
+                    <select id="language-select" class="w-full p-2 border rounded bg-white">
+                        <option value="english">English</option>
+                        <option value="hindi">हिंदी</option>
+                        <option value="gujarati">ગુજરાતી</option>
+                        <option value="telugu">తెలుగు</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-4">
+                    <button id="start-btn" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                        Start Conversation
+                    </button>
+                    
+                    <button id="stop-btn" class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition" disabled>
+                        Stop Conversation
+                    </button>
+                </div>
+
+                <div class="mt-6">
+                    <h2 class="text-lg font-semibold mb-2">Conversation</h2>
+                    <div id="conversation-log" class="h-40 overflow-y-auto bg-gray-100 p-2 rounded text-left">
+                        <!-- Conversation messages will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Video -->
+            <div class="space-y-4">
+                <div class="relative aspect-video bg-black rounded-lg overflow-hidden">
+                    <video id="local-video" class="absolute inset-0 w-full h-full object-cover" autoplay muted playsinline></video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
